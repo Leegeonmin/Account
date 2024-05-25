@@ -32,7 +32,7 @@ public class AccountService {
         validateCreateAccount(accountUser);
         String newAccountNumber = makeNewAccountNumber();
         Account account = accountRepository.save(
-                new Account().builder()
+                 Account.builder()
                         .accountNumber(newAccountNumber)
                         .accountUser(accountUser)
                         .accountStatus(AccountStatus.IN_USE)
