@@ -1,4 +1,4 @@
-package com.zerobase.account.exception;
+package com.zerobase.account.dto;
 
 import com.zerobase.account.type.CustomErrorCode;
 import lombok.*;

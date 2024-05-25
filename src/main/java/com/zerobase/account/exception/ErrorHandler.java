@@ -1,5 +1,6 @@
 package com.zerobase.account.exception;
 
+import com.zerobase.account.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
