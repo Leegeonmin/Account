@@ -1,9 +1,19 @@
 ### POST 계좌 생성
-POST localhost:8080/Account
+POST localhost:8080/account
 Content-Type: application/json
 
 {
-    "userId" : 0,
-    "amount" : 50000
+    "userId" : 1,
+    "amount" : 100
 }
+
+### POST 계좌 생성 실패(요청 잘못)
+POST localhost:8080/account
+Content-Type: application/json
+
+{
+    "userId" : 100,
+    "amount" : -100
+}
+
 ###
