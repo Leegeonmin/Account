@@ -1,0 +1,9 @@
+### POST 계좌 생성
+POST localhost:8080/Account
+Content-Type: application/json
+
+{
+    "userId" : 0,
+    "amount" : 50000
+}
+###

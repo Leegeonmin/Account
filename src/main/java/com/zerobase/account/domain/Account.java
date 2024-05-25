@@ -5,6 +5,7 @@ import com.zerobase.account.type.AccountStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-
+@Getter
 public class Account {
     @Id
     @GeneratedValue
@@ -24,9 +25,12 @@ public class Account {
 
     @ManyToOne
     private AccountUser accountUser;
+    private String accountNumber;
 
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
+
+    private Long balance;
 
     @CreatedDate
     private LocalDateTime registeredAt;
