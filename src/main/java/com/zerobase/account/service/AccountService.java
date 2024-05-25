@@ -45,6 +45,7 @@ public class AccountService {
 
     }
 
+
     private String makeNewAccountNumber() {
         // 시작 숫자가 1부터인 10자리 랜덤 정수 생성
         long min = 1000000000L; // 10자리 정수의 최소값
