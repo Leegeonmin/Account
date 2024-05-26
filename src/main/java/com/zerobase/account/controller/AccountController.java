@@ -2,13 +2,11 @@ package com.zerobase.account.controller;
 
 import com.zerobase.account.dto.AccountDto;
 import com.zerobase.account.dto.CreateAccount;
+import com.zerobase.account.dto.DeleteAccount;
 import com.zerobase.account.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("account")
@@ -21,5 +19,12 @@ public class AccountController {
         AccountDto account = accountService.createAccount(request.getUserId(), request.getAmount());
 
         return CreateAccount.Response.from(account);
+    }
+
+    @DeleteMapping
+    public DeleteAccount.Response deleteAccount(@RequestBody @Valid DeleteAccount.Request request){
+        AccountDto account = accountService.deleteAccount(request.getUserId(), request.getAccountNumber());
+
+        return DeleteAccount.Response.from(account);
     }
 }

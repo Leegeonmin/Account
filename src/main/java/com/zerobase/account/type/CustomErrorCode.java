@@ -6,6 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CustomErrorCode {
+    BALANCE_EXISTED("잔액이 남아있어서 해지할 수 없습니다"),
+    ALREADY_UNREGISTERED("이미 해지된 계좌입니다"),
+    MATCH_USER_DIFFERENT("사용자 아이디와 계좌 소유주가 다릅니다"),
+    ACCOUNT_NOT_FOUND("계좌를 찾을 수 없습니다"),
     INVALID_REQUEST("요청이 잘못되었습니다."),
     ALREADY_OVER_10_ACCOUNT("이미 10개가 넘는 계좌를 가지고 있습니다."),
     USER_NOT_FOUND("ID와 일치하는 사용자가 없습니다.");

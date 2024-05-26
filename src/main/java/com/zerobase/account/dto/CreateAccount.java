@@ -15,7 +15,7 @@ public class CreateAccount {
         @NotNull @Min(1)
         private final Long userId;
 
-        @NotNull @Min(1)
+        @NotNull @Min(0)
         private final Long amount;
     }
 

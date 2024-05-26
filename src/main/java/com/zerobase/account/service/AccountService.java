@@ -7,13 +7,14 @@ import com.zerobase.account.exception.AccountException;
 import com.zerobase.account.repository.AccountRepository;
 import com.zerobase.account.repository.AccountUserRepository;
 import com.zerobase.account.type.AccountStatus;
-import com.zerobase.account.type.CustomErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static com.zerobase.account.type.CustomErrorCode.*;
 
 
 @Service
@@ -26,8 +27,7 @@ public class AccountService {
 
     @Transactional(readOnly = false)
     public AccountDto createAccount(Long userId, Long amount) {
-        AccountUser accountUser = accountUserRepository.findById(userId)
-                .orElseThrow(() -> new AccountException(CustomErrorCode.USER_NOT_FOUND));
+        AccountUser accountUser = getAccountUser(userId);
 
         validateCreateAccount(accountUser);
         String newAccountNumber = makeNewAccountNumber();
@@ -45,6 +45,11 @@ public class AccountService {
 
     }
 
+    private AccountUser getAccountUser(Long userId) {
+        AccountUser accountUser = accountUserRepository.findById(userId)
+                .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
+        return accountUser;
+    }
 
     private String makeNewAccountNumber() {
         // 시작 숫자가 1부터인 10자리 랜덤 정수 생성
@@ -60,7 +65,39 @@ public class AccountService {
 
     public void validateCreateAccount(AccountUser accountUser) {
         if (accountRepository.countByAccountUser(accountUser) >= 10) {
-            throw new AccountException(CustomErrorCode.ALREADY_OVER_10_ACCOUNT);
+            throw new AccountException(ALREADY_OVER_10_ACCOUNT);
         }
     }
+    @Transactional(readOnly = false)
+    public AccountDto deleteAccount(Long userId, String accountNumber) {
+        AccountUser accountUser = getAccountUser(userId);
+        Account account = getAccount(accountNumber);
+
+        validateDeleteAccount(accountUser, account);
+
+        account.deleteAccount();
+        return AccountDto.fromEntity(account);
+    }
+
+    private static void validateDeleteAccount(AccountUser accountUser, Account account) {
+        if(accountUser.getId() != account.getId()){
+            throw new AccountException(MATCH_USER_DIFFERENT);
+        }
+
+        if(account.getAccountStatus() == AccountStatus.UNREGISTERED){
+            throw new AccountException(ALREADY_UNREGISTERED);
+        }
+
+        if(account.getBalance() > 0){
+            throw new AccountException(BALANCE_EXISTED);
+        }
+    }
+
+    private Account getAccount(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountException(ACCOUNT_NOT_FOUND));
+        return account;
+    }
+
+
 }
