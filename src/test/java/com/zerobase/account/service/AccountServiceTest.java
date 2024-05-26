@@ -15,10 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.zerobase.account.type.AccountStatus.IN_USE;
 import static com.zerobase.account.type.AccountStatus.UNREGISTERED;
+import static com.zerobase.account.type.CustomErrorCode.USER_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
@@ -62,7 +65,7 @@ class AccountServiceTest {
         //when
         AccountException accountException = assertThrows(AccountException.class, () -> accountService.createAccount(1L, 1000L));
         //then
-        assertEquals(accountException.getErrorCode(), CustomErrorCode.USER_NOT_FOUND);
+        assertEquals(accountException.getErrorCode(), USER_NOT_FOUND);
 
     }
 
@@ -110,7 +113,7 @@ class AccountServiceTest {
         //when
         AccountException accountException = assertThrows(AccountException.class, () -> accountService.deleteAccount(1L, "1234007890"));
         //then
-        assertEquals(CustomErrorCode.USER_NOT_FOUND, accountException.getErrorCode());
+        assertEquals(USER_NOT_FOUND, accountException.getErrorCode());
     }
 
     @Test
@@ -169,5 +172,47 @@ class AccountServiceTest {
         AccountException accountException = assertThrows(AccountException.class, () -> accountService.deleteAccount(1L, "1234007890"));
         //then
         assertEquals(CustomErrorCode.BALANCE_EXISTED, accountException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("계좌 조회 성공")
+    void getAccountsSuccess() {
+        AccountUser user = AccountUser.builder()
+                .id(1L)
+                .username("lee")
+                .build();
+        List<Account> list = new ArrayList<>();
+        list.add(Account.builder().accountUser(user).accountStatus(IN_USE).accountNumber("1234567890").build());
+        list.add(Account.builder().accountUser(user).accountStatus(IN_USE).accountNumber("1234567890").build());
+        list.add(Account.builder().accountUser(user).accountStatus(IN_USE).accountNumber("1234567890").build());
+
+        //given
+        given(accountUserRepository.findById(anyLong()))
+                .willReturn(Optional.of(user));
+        given(accountRepository.findByAccountUser(user))
+                .willReturn(list);
+        //when
+        List<AccountDto> account = accountService.getAccount(1L);
+
+        //then
+        assertEquals(list.size(), account.size());
+        assertEquals(list.get(0).getAccountNumber(), "1234567890");
+    }
+
+    @Test
+    @DisplayName("계좌 조회 실패 (사용자 없는 경우 )")
+    void getAccountsFail_USER_NOT_FOUND() {
+
+        //given
+        given(accountUserRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        AccountException accountException = assertThrows(AccountException.class,
+                () -> accountService.getAccount(1L));
+
+
+        //then
+        assertEquals(accountException.getErrorCode(), USER_NOT_FOUND);
     }
 }

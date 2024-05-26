@@ -16,13 +16,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.zerobase.account.type.CustomErrorCode.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -125,7 +126,7 @@ class AccountControllerTest {
         mockMvc.perform(delete("/account")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new DeleteAccount.Request(1000L, "0000000000")                        )))
+                                new DeleteAccount.Request(1000L, "0000000000"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1L))
                 .andExpect(jsonPath("$.accountNumber").value("1234567890"))
@@ -145,7 +146,7 @@ class AccountControllerTest {
         mockMvc.perform(delete("/account")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new DeleteAccount.Request(1000L, "0000000000")                        )))
+                                new DeleteAccount.Request(1000L, "0000000000"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorCode").value("USER_NOT_FOUND"))
                 .andExpect(jsonPath("$.errorMessage").value("ID와 일치하는 사용자가 없습니다."))
@@ -165,7 +166,7 @@ class AccountControllerTest {
         mockMvc.perform(delete("/account")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new DeleteAccount.Request(101200L, "0000000000")                        )))
+                                new DeleteAccount.Request(101200L, "0000000000"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorCode").value("MATCH_USER_DIFFERENT"))
                 .andExpect(jsonPath("$.errorMessage").value("사용자 아이디와 계좌 소유주가 다릅니다"))
@@ -185,7 +186,7 @@ class AccountControllerTest {
         mockMvc.perform(delete("/account")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new DeleteAccount.Request(101200L, "0000000000")                        )))
+                                new DeleteAccount.Request(101200L, "0000000000"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorCode").value("ALREADY_UNREGISTERED"))
                 .andExpect(jsonPath("$.errorMessage").value("이미 해지된 계좌입니다"))
@@ -205,11 +206,60 @@ class AccountControllerTest {
         mockMvc.perform(delete("/account")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new DeleteAccount.Request(101200L, "0000000000")                        )))
+                                new DeleteAccount.Request(101200L, "0000000000"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorCode").value("BALANCE_EXISTED"))
                 .andExpect(jsonPath("$.errorMessage").value("잔액이 남아있어서 해지할 수 없습니다"))
                 .andDo(print());
 
+    }
+
+    @Test
+    @DisplayName("계좌 조회 성공")
+    void successGetAccounts() throws Exception {
+        List<AccountDto> list = new ArrayList<>();
+        list.add(AccountDto.builder().accountNumber("1234567890").balance(1L).build());
+        list.add(AccountDto.builder().accountNumber("1234567800").balance(2L).build());
+        list.add(AccountDto.builder().accountNumber("1234567000").balance(3L).build());
+        list.add(AccountDto.builder().accountNumber("1234560000").balance(4L).build());
+
+        //given
+        given(accountService.getAccount(anyLong()))
+                .willReturn(list);
+        //when
+        //then
+        mockMvc.perform(get("/account/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].accountNumber").value("1234567890"))
+                .andExpect(jsonPath("$[0].balance").value(1L))
+                .andExpect(jsonPath("$[1].accountNumber").value("1234567800"))
+                .andExpect(jsonPath("$[1].balance").value(2L))
+                .andExpect(jsonPath("$[2].accountNumber").value("1234567000"))
+                .andExpect(jsonPath("$[2].balance").value(3L))
+                .andExpect(jsonPath("$[3].accountNumber").value("1234560000"))
+                .andExpect(jsonPath("$[3].balance").value(4L))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("계좌 조회 실패 (사용자 없는 경우)")
+    void failGetAccount_USER_NOT_FOUND()   {
+
+        //given
+        given(accountService.getAccount(anyLong()))
+                .willThrow(new AccountException(USER_NOT_FOUND));
+        //when
+        //then
+        try {
+            mockMvc.perform(get("/account/1")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.errorCode").value("USER_NOT_FOUND"))
+                    .andExpect(jsonPath("$.errorMessage").value("ID와 일치하는 사용자가 없습니다."))
+                    .andDo(print());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
