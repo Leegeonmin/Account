@@ -10,6 +10,7 @@ import com.zerobase.account.repository.AccountUserRepository;
 import com.zerobase.account.repository.TransactionRepository;
 import com.zerobase.account.type.AccountStatus;
 import com.zerobase.account.type.CustomErrorCode;
+import com.zerobase.account.type.TransactionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,5 +73,22 @@ public class TransactionService {
         if (balance < min || balance > max) {
             throw new AccountException(CustomErrorCode.AMOUNT_TOO_BIG_OR_TOO_SMALL);
         }
+    }
+
+    @Transactional(readOnly = false)
+    public void saveFailedUseTransaction(String accountNumber, Long balance) {
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountException((CustomErrorCode.ACCOUNT_NOT_FOUND)));
+        return transactionRepository.save(
+                Transaction.builder()
+                        .transactionType(USE)
+                        .transactionResultType(F)
+                        .account(account)
+                        .amount(balance)
+                        .balanceSnapshot(account.getBalance())
+                        .transactionId(UUID.randomUUID().toString().replace("-", ""))
+                        .transactedAt(LocalDateTime.now())
+                        .build());
     }
 }
