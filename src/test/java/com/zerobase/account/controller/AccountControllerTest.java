@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -139,7 +138,6 @@ class AccountControllerTest {
     void failDeleteAccount_USER_NOT_FOUND() throws Exception {
 
         //given
-        LocalDateTime now = LocalDateTime.now();
         given(accountService.deleteAccount(anyLong(), anyString()))
                 .willThrow(new AccountException(USER_NOT_FOUND));
         //when
@@ -160,7 +158,6 @@ class AccountControllerTest {
     void failDeleteAccount_MATCH_USER_DIFFERENT() throws Exception {
 
         //given
-        LocalDateTime now = LocalDateTime.now();
         given(accountService.deleteAccount(anyLong(), anyString()))
                 .willThrow(new AccountException(MATCH_USER_DIFFERENT));
         //when
@@ -181,7 +178,6 @@ class AccountControllerTest {
     void failDeleteAccount_ALREADY_UNREGISTERED() throws Exception {
 
         //given
-        LocalDateTime now = LocalDateTime.now();
         given(accountService.deleteAccount(anyLong(), anyString()))
                 .willThrow(new AccountException(ALREADY_UNREGISTERED));
         //when
@@ -202,7 +198,6 @@ class AccountControllerTest {
     void failDeleteAccount_BALANCE_EXISTED() throws Exception {
 
         //given
-        LocalDateTime now = LocalDateTime.now();
         given(accountService.deleteAccount(anyLong(), anyString()))
                 .willThrow(new AccountException(BALANCE_EXISTED));
         //when

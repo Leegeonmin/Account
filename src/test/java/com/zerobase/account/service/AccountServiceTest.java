@@ -58,7 +58,6 @@ class AccountServiceTest {
     @DisplayName("계좌 생성 실패 - 유저 없음")
     public void createAccount_UserNotFound() {
         //given
-        AccountUser user = AccountUser.builder().id(1L).username("Lee").build();
         given(accountUserRepository.findById(anyLong())).willReturn(Optional.empty());
         //when
         AccountException accountException = assertThrows(AccountException.class, () -> accountService.createAccount(1L, 1000L));
@@ -106,7 +105,6 @@ class AccountServiceTest {
     @DisplayName("계좌 해지 실패 (사용자가 없는 경우) ")
     void deleteAccountFail_USER_NOT_FOUND() {
         //given
-        AccountUser user = AccountUser.builder().id(1L).username("Lee").build();
         given(accountUserRepository.findById(anyLong())).willReturn(Optional.empty());
 
         //when
