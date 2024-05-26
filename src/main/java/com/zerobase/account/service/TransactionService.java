@@ -10,7 +10,6 @@ import com.zerobase.account.repository.AccountUserRepository;
 import com.zerobase.account.repository.TransactionRepository;
 import com.zerobase.account.type.AccountStatus;
 import com.zerobase.account.type.CustomErrorCode;
-import com.zerobase.account.type.TransactionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.zerobase.account.type.TransactionResultType.FAIL;
 import static com.zerobase.account.type.TransactionResultType.SUCCESS;
 import static com.zerobase.account.type.TransactionType.USE;
 
@@ -38,7 +38,7 @@ public class TransactionService {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountException(CustomErrorCode.ACCOUNT_NOT_FOUND));
 
-        validateUseBalance(accountUser,balance, account);
+        validateUseBalance(accountUser, balance, account);
 
         // 계좌에서 돈 빼고
         // Transaction 생성
@@ -80,15 +80,24 @@ public class TransactionService {
 
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountException((CustomErrorCode.ACCOUNT_NOT_FOUND)));
-        return transactionRepository.save(
+        transactionRepository.save(
                 Transaction.builder()
                         .transactionType(USE)
-                        .transactionResultType(F)
+                        .transactionResultType(FAIL)
                         .account(account)
                         .amount(balance)
                         .balanceSnapshot(account.getBalance())
                         .transactionId(UUID.randomUUID().toString().replace("-", ""))
                         .transactedAt(LocalDateTime.now())
                         .build());
+    }
+
+    public TransactionDto getTransaction(String transactionId) {
+        System.out.println(transactionId + " 끼이야");
+        Transaction transaction = transactionRepository.findByTransactionId(transactionId)
+                .orElseThrow(() -> new AccountException(CustomErrorCode.TRANSACTION_NOT_FOUND));
+        System.out.println(transaction.toString());
+        return TransactionDto.fromEntity(transaction);
+
     }
 }

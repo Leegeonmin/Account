@@ -1,16 +1,14 @@
 package com.zerobase.account.controller;
 
 import com.zerobase.account.dto.TransactionDto;
+import com.zerobase.account.dto.TransactionInfo;
 import com.zerobase.account.dto.UseTransaction;
 import com.zerobase.account.exception.AccountException;
 import com.zerobase.account.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -23,17 +21,24 @@ public class TransactionController {
     public UseTransaction.Response useBalance(
             @RequestBody @Valid
             UseTransaction.Request request
-    ){
-        try{
+    ) {
+        try {
             TransactionDto transaction = transactionService.useBalance(request.getUserId(), request.getAccountNumber()
-                    ,request.getBalance());
+                    , request.getBalance());
 
             return UseTransaction.Response.from(transaction);
-        }catch (AccountException e){
+        } catch (AccountException e) {
             log.error("Failed to use balance");
             transactionService.saveFailedUseTransaction(request.getAccountNumber(), request.getBalance());
             throw e;
         }
 
+    }
+
+    @GetMapping()
+    public TransactionInfo getTransaction(@RequestParam(name = "transactionId") String transactionId) {
+        System.out.println("끼야홋" + transactionId);
+        TransactionDto transaction = transactionService.getTransaction(transactionId);
+        return TransactionInfo.from(transaction);
     }
 }

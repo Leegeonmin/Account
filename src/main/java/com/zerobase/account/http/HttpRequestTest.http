@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "userId" : 2,
-    "amount" : 311000
+    "amount" : 11000
 }
 
 ### POST 계좌 생성 실패(요청 잘못)
@@ -22,7 +22,7 @@ Content-Type: application/json
 
 {
   "userId" : -20,
-  "accountNumber" : 1512749985
+  "accountNumber" : 8585270739
 }
 
 ### GET 사용자 계좌 조회
@@ -36,8 +36,16 @@ POST localhost:8080/transaction/use
 Content-Type: application/json
 
 {
-  "userId" : 1,
-  "accountNumber": "8324623417",
+  "userId" : 2,
+  "accountNumber": "6718438804",
   "balance": 2000
 
 }
+
+### GET 거래 조회
+
+GET localhost:8080/transaction?transactionId=d88599ba1b4342fcb9c28e424dc83793
+Host: example.com
+Accept: application/json
+
+
