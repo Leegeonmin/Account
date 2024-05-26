@@ -86,7 +86,7 @@ public class AccountService {
 
     private static void validateDeleteAccount(AccountUser accountUser, Account account) {
         if (!accountUser.getId().equals(account.getAccountUser().getId())) {
-            throw new AccountException(MATCH_USER_DIFFERENT);
+            throw new AccountException(USER_UNMATCH);
         }
 
         if (account.getAccountStatus() == AccountStatus.UNREGISTERED) {

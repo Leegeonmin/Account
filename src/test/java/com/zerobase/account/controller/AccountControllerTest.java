@@ -160,7 +160,7 @@ class AccountControllerTest {
 
         //given
         given(accountService.deleteAccount(anyLong(), anyString()))
-                .willThrow(new AccountException(MATCH_USER_DIFFERENT));
+                .willThrow(new AccountException(USER_UNMATCH));
         //when
         //then
         mockMvc.perform(delete("/account")

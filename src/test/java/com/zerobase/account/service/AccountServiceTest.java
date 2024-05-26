@@ -133,7 +133,7 @@ class AccountServiceTest {
         //when
         AccountException accountException = assertThrows(AccountException.class, () -> accountService.deleteAccount(1L, "1234007890"));
         //then
-        assertEquals(CustomErrorCode.MATCH_USER_DIFFERENT, accountException.getErrorCode());
+        assertEquals(CustomErrorCode.USER_UNMATCH, accountException.getErrorCode());
     }
 
     @Test

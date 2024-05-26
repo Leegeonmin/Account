@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 public class UseTransaction {
 
+
     @Getter
     @AllArgsConstructor
     public static class Request{

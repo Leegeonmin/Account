@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.zerobase.account.type.TransactionResultType.SUCCESS;
@@ -34,9 +35,9 @@ public class TransactionService {
         AccountUser accountUser = accountUserRepository.findById(userId)
                 .orElseThrow(() -> new AccountException(CustomErrorCode.USER_NOT_FOUND));
         Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new AccountException(CustomErrorCode.MATCH_USER_DIFFERENT));
+                .orElseThrow(() -> new AccountException(CustomErrorCode.ACCOUNT_NOT_FOUND));
 
-        validateUseBalance(balance, account);
+        validateUseBalance(accountUser,balance, account);
 
         // 계좌에서 돈 빼고
         // Transaction 생성
@@ -55,7 +56,10 @@ public class TransactionService {
         return TransactionDto.fromEntity(transaction);
     }
 
-    private static void validateUseBalance(Long balance, Account account) {
+    private static void validateUseBalance(AccountUser accountUser, Long balance, Account account) {
+        if (!Objects.equals(accountUser.getId(), account.getAccountUser().getId())) {
+            throw new AccountException(CustomErrorCode.USER_UNMATCH);
+        }
         if (account.getAccountStatus() == AccountStatus.UNREGISTERED) {
             throw new AccountException(CustomErrorCode.ALREADY_UNREGISTERED);
         }
