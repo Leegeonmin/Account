@@ -29,7 +29,7 @@ public class ErrorHandler {
 
         BindingResult bindingResult = e.getBindingResult();
         FieldError error = bindingResult.getFieldError();
-        String fieldError = String.format("Field: %s, Error: %s", error.getField(), error.getDefaultMessage());
+        String fieldError = String.format("Field: %s, Error: %s", error != null ? error.getField() : null, error.getDefaultMessage());
 
         return new ErrorResponse(CustomErrorCode.INVALID_REQUEST,
                 CustomErrorCode.INVALID_REQUEST.getDescription(),

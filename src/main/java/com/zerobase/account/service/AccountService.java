@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static com.zerobase.account.type.CustomErrorCode.*;
 
@@ -103,4 +105,12 @@ public class AccountService {
     }
 
 
+    public List<AccountDto> getAccount(Long userId) {
+        AccountUser user = accountUserRepository.findById(userId)
+                .orElseThrow(()-> new AccountException(USER_NOT_FOUND));
+        List<Account> accounts = accountRepository.findByAccountUser(user);
+        return accounts.stream()
+                .map(AccountDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 }
