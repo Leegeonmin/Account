@@ -5,6 +5,7 @@ import com.zerobase.account.type.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-
+@Getter
 public class Transaction {
     @Id
     @GeneratedValue
@@ -32,6 +33,7 @@ public class Transaction {
     @ManyToOne
     private Account account;
     private Long amount;
+    private Long balanceSnapshot;
 
     private String transactionId;
     private LocalDateTime transactedAt;

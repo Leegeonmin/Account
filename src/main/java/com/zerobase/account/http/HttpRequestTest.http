@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "userId" : 2,
-    "amount" : 300
+    "amount" : 311000
 }
 
 ### POST 계좌 생성 실패(요청 잘못)
@@ -29,3 +29,15 @@ Content-Type: application/json
 
 GET localhost:8080/account/2
 Content-Type: application/json
+
+### POST 거래 잔액 사용
+
+POST localhost:8080/transaction/use
+Content-Type: application/json
+
+{
+  "userId" : 1,
+  "accountNumber": "8324623417",
+  "balance": 2000
+
+}

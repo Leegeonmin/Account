@@ -6,6 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CustomErrorCode {
+    AMOUNT_TOO_BIG_OR_TOO_SMALL("거래금액이 너무 작거나 너무 큽니다"),
+    TRANSACTION_FEE_OVER_ACCOUNT_BALANCE("거래금액이 잔액보다 큽니다"),
     INTERNAL_SERVER_ERROR("내부 서버 오류가 발생했습니다"),
     BALANCE_EXISTED("잔액이 남아있어서 해지할 수 없습니다"),
     ALREADY_UNREGISTERED("이미 해지된 계좌입니다"),

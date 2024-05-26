@@ -41,4 +41,8 @@ public class Account {
         this.setAccountStatus(UNREGISTERED);
         this.setUnRegisteredAt(LocalDateTime.now());
     }
+
+    public void useBalance(long amount){
+        this.balance -= amount;
+    }
 }
