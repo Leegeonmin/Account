@@ -14,16 +14,15 @@ import com.zerobase.account.type.CustomErrorCode;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-    @ResponseStatus
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(AccountException.class)
     public ErrorResponse handleAccountException(AccountException e) {
         log.error("{} is occurred", e.getErrorCode());
         return new ErrorResponse(e.getErrorCode(), e.getMessage());
     }
 
-
     //요청 데이터 오류
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException is occurred", e);
@@ -37,4 +36,10 @@ public class ErrorHandler {
                 fieldError);
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ErrorResponse handleException(Exception e) {
+        log.error("Exception is occurred", e);
+        return new ErrorResponse(CustomErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
 }

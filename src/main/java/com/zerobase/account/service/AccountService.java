@@ -32,7 +32,7 @@ public class AccountService {
         validateCreateAccount(accountUser);
         String newAccountNumber = makeNewAccountNumber();
         Account account = accountRepository.save(
-                 Account.builder()
+                Account.builder()
                         .accountNumber(newAccountNumber)
                         .accountUser(accountUser)
                         .accountStatus(AccountStatus.IN_USE)
@@ -55,9 +55,9 @@ public class AccountService {
         // 시작 숫자가 1부터인 10자리 랜덤 정수 생성
         long min = 1000000000L; // 10자리 정수의 최소값
         long max = 9999999999L; // 10자리 정수의 최대값
-        while(true){
+        while (true) {
             String newAccountNum = String.valueOf(ThreadLocalRandom.current().nextLong(min, max + 1));
-            if(!accountRepository.existsAccountByAccountNumber(newAccountNum)){
+            if (!accountRepository.existsAccountByAccountNumber(newAccountNum)) {
                 return newAccountNum;
             }
         }
@@ -68,6 +68,7 @@ public class AccountService {
             throw new AccountException(ALREADY_OVER_10_ACCOUNT);
         }
     }
+
     @Transactional(readOnly = false)
     public AccountDto deleteAccount(Long userId, String accountNumber) {
         AccountUser accountUser = getAccountUser(userId);
@@ -76,19 +77,21 @@ public class AccountService {
         validateDeleteAccount(accountUser, account);
 
         account.deleteAccount();
+        accountRepository.save(account);
+
         return AccountDto.fromEntity(account);
     }
 
     private static void validateDeleteAccount(AccountUser accountUser, Account account) {
-        if(accountUser.getId() != account.getId()){
+        if (!accountUser.getId().equals(account.getAccountUser().getId())) {
             throw new AccountException(MATCH_USER_DIFFERENT);
         }
 
-        if(account.getAccountStatus() == AccountStatus.UNREGISTERED){
+        if (account.getAccountStatus() == AccountStatus.UNREGISTERED) {
             throw new AccountException(ALREADY_UNREGISTERED);
         }
 
-        if(account.getBalance() > 0){
+        if (account.getBalance() > 0) {
             throw new AccountException(BALANCE_EXISTED);
         }
     }

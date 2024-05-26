@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CustomErrorCode {
+    INTERNAL_SERVER_ERROR("내부 서버 오류가 발생했습니다"),
     BALANCE_EXISTED("잔액이 남아있어서 해지할 수 없습니다"),
     ALREADY_UNREGISTERED("이미 해지된 계좌입니다"),
     MATCH_USER_DIFFERENT("사용자 아이디와 계좌 소유주가 다릅니다"),
