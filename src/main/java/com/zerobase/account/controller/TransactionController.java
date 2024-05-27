@@ -37,7 +37,6 @@ public class TransactionController {
 
     @GetMapping()
     public TransactionInfo getTransaction(@RequestParam(name = "transactionId") String transactionId) {
-        System.out.println("끼야홋" + transactionId);
         TransactionDto transaction = transactionService.getTransaction(transactionId);
         return TransactionInfo.from(transaction);
     }

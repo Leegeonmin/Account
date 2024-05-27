@@ -93,10 +93,8 @@ public class TransactionService {
     }
 
     public TransactionDto getTransaction(String transactionId) {
-        System.out.println(transactionId + " 끼이야");
         Transaction transaction = transactionRepository.findByTransactionId(transactionId)
                 .orElseThrow(() -> new AccountException(CustomErrorCode.TRANSACTION_NOT_FOUND));
-        System.out.println(transaction.toString());
         return TransactionDto.fromEntity(transaction);
 
     }

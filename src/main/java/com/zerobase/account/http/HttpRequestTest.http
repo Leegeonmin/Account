@@ -22,7 +22,7 @@ Content-Type: application/json
 
 {
   "userId" : -20,
-  "accountNumber" : 8585270739
+  "accountNumber" : "8585270739"
 }
 
 ### GET 사용자 계좌 조회
