@@ -9,6 +9,7 @@ import com.zerobase.account.repository.AccountRepository;
 import com.zerobase.account.repository.AccountUserRepository;
 import com.zerobase.account.repository.TransactionRepository;
 import com.zerobase.account.type.CustomErrorCode;
+import com.zerobase.account.type.TransactionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -252,5 +253,111 @@ class TransactionServiceTest {
         assertEquals(TRANSACTION_NOT_FOUND, accountException.getErrorCode());
 
     }
+    @Test
+    @DisplayName("잔액 사용 취소 성공")
+    void successCancelBalance() {
+        AccountUser user = AccountUser.builder()
+                .id(1L)
+                .username("lee")
+                .build();
+        Account account = Account.builder()
+                .id(1L)
+                .balance(10000L)
+                .accountUser(user)
+                .accountNumber("1234567890")
+                .accountStatus(IN_USE)
+                .build();
+        Transaction transaction = Transaction.builder()
+                .account(account)
+                .transactionId("transactionId")
+                .transactionType(TransactionType.CANCEL)
+                .amount(20000L)
+                .transactionResultType(SUCCESS)
+                .build();
+        //given
+        given(transactionRepository.findByTransactionId(anyString()))
+                .willReturn(Optional.of(transaction));
+        given(accountRepository.findByAccountNumber(anyString()))
+                .willReturn(Optional.of(account));
+        given(transactionRepository.save(any(Transaction.class)))
+                .willReturn(transaction);
 
+        //when
+        TransactionDto transactionDto = transactionService.cancelBalance("transactionId", "1234567890", 20000L);
+
+        //then
+        assertEquals(TransactionType.CANCEL, transactionDto.getTransactionType());
+    }
+
+    @Test
+    @DisplayName("잔액 사용 취소 실패 ( 원거래 금액과 취소 금액이 다른 경우)")
+    void failCancelBalance_CANCEL_BALANCE_AMOUNT_DIFFERENT() {
+
+        AccountUser user = AccountUser.builder()
+                .id(1L)
+                .username("lee")
+                .build();
+        Account account = Account.builder()
+                .id(1L)
+                .balance(10000L)
+                .accountUser(user)
+                .accountNumber("1234567890")
+                .accountStatus(IN_USE)
+                .build();
+        Transaction transaction = Transaction.builder()
+                .account(account)
+                .transactionId("transactionId")
+                .transactionType(TransactionType.CANCEL)
+                .amount(20000L)
+                .transactionResultType(SUCCESS)
+                .build();
+        //given
+        given(transactionRepository.findByTransactionId(anyString()))
+                .willReturn(Optional.of(transaction));
+        given(accountRepository.findByAccountNumber(anyString()))
+                .willReturn(Optional.of(account));
+
+        //when
+        AccountException accountException = assertThrows(AccountException.class,
+                () -> transactionService.cancelBalance("transactionId", "1234567890", 20001L));
+        //then
+        assertEquals(CustomErrorCode.CANCEL_BALANCE_AMOUNT_DIFFERENT, accountException.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("잔액 사용 취소 실패 (트랜잭션이 해당 계좌의 거래가 아닌경우 )")
+    void failCancelBalance_TRANSACTION_ACCOUNT_NOT_SAME() {
+
+        AccountUser user = AccountUser.builder()
+                .id(1L)
+                .username("lee")
+                .build();
+        Account account = Account.builder()
+                .id(1L)
+                .balance(10000L)
+                .accountUser(user)
+                .accountNumber("1234567890")
+                .accountStatus(IN_USE)
+                .build();
+        Transaction transaction = Transaction.builder()
+                .account(account)
+                .transactionId("transactionId")
+                .transactionType(TransactionType.CANCEL)
+                .amount(20000L)
+                .transactionResultType(SUCCESS)
+                .build();
+        //given
+        given(transactionRepository.findByTransactionId(anyString()))
+                .willReturn(Optional.of(transaction));
+        given(accountRepository.findByAccountNumber(anyString()))
+                .willReturn(Optional.of(account));
+
+        //when
+        AccountException accountException = assertThrows(AccountException.class,
+                () -> transactionService.cancelBalance("transactionId", "1234567800", 20000L));
+        //then
+        assertEquals(CustomErrorCode.TRANSACTION_ACCOUNT_NOT_SAME, accountException.getErrorCode());
+
+    }
 }

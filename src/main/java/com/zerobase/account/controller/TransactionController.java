@@ -42,7 +42,7 @@ public class TransactionController {
             CancelTransaction.Request request
     ){
         try{
-            return CancelTransaction.Response.from( transactionService.cancelTransaction(request.getTransactionId(), request.getAccountNumber()
+            return CancelTransaction.Response.from( transactionService.cancelBalance(request.getTransactionId(), request.getAccountNumber()
                     , request.getAmount()));
         }catch (AccountException e){
             log.error("Failed to cancel balance.");

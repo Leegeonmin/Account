@@ -168,7 +168,7 @@ class AccountControllerTest {
                         .content(objectMapper.writeValueAsString(
                                 new DeleteAccount.Request(101200L, "0000000000"))))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorCode").value("MATCH_USER_DIFFERENT"))
+                .andExpect(jsonPath("$.errorCode").value("USER_UNMATCH"))
                 .andExpect(jsonPath("$.errorMessage").value("사용자 아이디와 계좌 소유주가 다릅니다"))
                 .andDo(print());
 
