@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CustomErrorCode {
+    ACCOUNT_TRANSACTION_LOCK("해당계좌는 사용중입니다"),
     TRANSACTION_ACCOUNT_NOT_SAME("트랜잭션이 해당 계좌의 거래가 아닙니다"),
     CANCEL_BALANCE_AMOUNT_DIFFERENT("원거래 금액과 취소 금액이 다릅니다"),
     TRANSACTION_NOT_FOUND("잔액 사용 내용이 없습니다"),

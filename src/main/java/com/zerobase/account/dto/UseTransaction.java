@@ -1,14 +1,13 @@
 package com.zerobase.account.dto;
 
+import com.zerobase.account.aop.AccountLockIdInterface;
 import com.zerobase.account.type.TransactionResultType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -17,13 +16,15 @@ public class UseTransaction {
     @Valid
     @Getter
     @AllArgsConstructor
-    public static class Request{
+    @NoArgsConstructor
+    @Setter
+    public static class Request implements AccountLockIdInterface {
         @NotNull @Min(1)
-        private final Long userId;
+        private  Long userId;
         @NotBlank @Size(min=10, max = 10)
-        private final String accountNumber;
+        private  String accountNumber;
         @NotNull @Min(1)
-        private final Long balance;
+        private  Long balance;
     }
 
     @Builder

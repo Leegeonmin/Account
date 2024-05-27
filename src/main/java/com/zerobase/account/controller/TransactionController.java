@@ -1,5 +1,6 @@
 package com.zerobase.account.controller;
 
+import com.zerobase.account.aop.AccountLock;
 import com.zerobase.account.dto.CancelTransaction;
 import com.zerobase.account.dto.TransactionDto;
 import com.zerobase.account.dto.TransactionInfo;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("transaction")
 public class TransactionController {
     private final TransactionService transactionService;
-
+    @AccountLock
     @PostMapping("/use")
     public UseTransaction.Response useBalance(
             @RequestBody @Valid
@@ -35,7 +36,7 @@ public class TransactionController {
         }
 
     }
-
+    @AccountLock
     @PostMapping("/cancel")
     public CancelTransaction.Response cancelBalance(
             @RequestBody @Valid
