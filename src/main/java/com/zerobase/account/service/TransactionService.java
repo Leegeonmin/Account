@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import static com.zerobase.account.type.TransactionResultType.FAIL;
 import static com.zerobase.account.type.TransactionResultType.SUCCESS;
+import static com.zerobase.account.type.TransactionType.CANCEL;
 import static com.zerobase.account.type.TransactionType.USE;
 
 @Service
@@ -91,11 +92,56 @@ public class TransactionService {
                         .transactedAt(LocalDateTime.now())
                         .build());
     }
+    @Transactional(readOnly = false)
+    public void saveFailedCancelTransaction(String accountNumber, Long balance) {
 
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountException((CustomErrorCode.ACCOUNT_NOT_FOUND)));
+        transactionRepository.save(
+                Transaction.builder()
+                        .transactionType(CANCEL)
+                        .transactionResultType(FAIL)
+                        .account(account)
+                        .amount(balance)
+                        .balanceSnapshot(account.getBalance())
+                        .transactionId(UUID.randomUUID().toString().replace("-", ""))
+                        .transactedAt(LocalDateTime.now())
+                        .build());
+    }
     public TransactionDto getTransaction(String transactionId) {
         Transaction transaction = transactionRepository.findByTransactionId(transactionId)
                 .orElseThrow(() -> new AccountException(CustomErrorCode.TRANSACTION_NOT_FOUND));
         return TransactionDto.fromEntity(transaction);
 
+    }
+
+    @Transactional(readOnly = false)
+    public TransactionDto cancelTransaction(String transactionId, String accountNumber, Long amount) {
+        Transaction transaction = transactionRepository.findByTransactionId(transactionId)
+                .orElseThrow(() -> new AccountException(CustomErrorCode.TRANSACTION_NOT_FOUND));
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountException((CustomErrorCode.ACCOUNT_NOT_FOUND)));
+
+        if(!Objects.equals(transaction.getAmount(), amount)){
+            throw new AccountException(CustomErrorCode.CANCEL_BALANCE_AMOUNT_DIFFERENT);
+        }
+
+        if(!Objects.equals(transaction.getAccount().getAccountNumber(), accountNumber)){
+            throw new AccountException(CustomErrorCode.TRANSACTION_ACCOUNT_NOT_SAME);
+        }
+
+        account.cancelBalance(amount);
+
+        return TransactionDto.fromEntity( transactionRepository.save(Transaction
+                .builder()
+                .transactionType(CANCEL)
+                .transactionResultType(SUCCESS)
+                .account(account)
+                .amount(amount)
+                .transactionId(UUID.randomUUID().toString().replace("-", ""))
+                .balanceSnapshot(account.getBalance())
+                .transactedAt(LocalDateTime.now())
+                .build())
+        );
     }
 }

@@ -37,7 +37,7 @@ Content-Type: application/json
 
 {
   "userId" : 2,
-  "accountNumber": "6718438804",
+  "accountNumber": "9856409608",
   "balance": 2000
 
 }
@@ -48,4 +48,14 @@ GET localhost:8080/transaction?transactionId=d88599ba1b4342fcb9c28e424dc83793
 Host: example.com
 Accept: application/json
 
+### POST 거래 잔액 취소
 
+POST localhost:8080/transaction/cancel
+Content-Type: application/json
+
+{
+  "transactionId" : "e949f6c97dfa4eb5a0cd69a30660ca27",
+  "accountNumber": "9856409608",
+  "amount": 2000
+
+}

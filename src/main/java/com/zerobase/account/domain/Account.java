@@ -45,4 +45,7 @@ public class Account {
     public void useBalance(long amount){
         this.balance -= amount;
     }
+    public void cancelBalance(long amount){
+        this.balance += amount;
+    }
 }
